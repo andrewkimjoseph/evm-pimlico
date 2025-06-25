@@ -13,5 +13,10 @@
     "@types/node": "^24.0.4",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "permissionless": "^0.2.47",
+    "viem": "^2.31.4"
   }
 }
