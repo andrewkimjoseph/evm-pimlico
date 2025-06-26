@@ -20,6 +20,14 @@ if (!process.env.PIMLICO_API_KEY) {
 
 const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
 
+if (!process.env.DRPC_API_KEY) {
+  throw new Error("DRPC_API_KEY is not defined");
+}
+
+const DRPC_API_KEY = process.env.DRPC_API_KEY;
+
+const DRPC_URL = `https://lb.drpc.org/ogrpc?network=celo-alfajores&dkey=${DRPC_API_KEY}`
+
 export const CREATE2_FACTORY_ADDRESS =
   "0x4e59b44847b379578588920cA78FbF26c0B4956C" as Address;
 
@@ -29,15 +37,14 @@ export const PIMLICO_URL = `https://api.pimlico.io/v2/${selectedChain.id}/rpc?ap
 
 export const PUBLIC_CLIENT = createPublicClient({
   chain: selectedChain,
-  transport: http(),
+  transport: http(DRPC_URL),
 });
 
 export const PRIVATE_CLIENT = createWalletClient({
   account: PRIVATE_ACCOUNT,
   chain: selectedChain,
-  transport: http(),
+  transport: http(DRPC_URL),
 });
-
 
 export const getSmartAccountAndClient = async () =>{
   const { createSmartAccountClient } = await import("permissionless");
