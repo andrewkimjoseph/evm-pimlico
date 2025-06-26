@@ -2,6 +2,7 @@ import { Address, createPublicClient, createWalletClient, http } from "viem";
 import { config } from "dotenv";
 import { celoAlfajores } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import { entryPoint07Address } from "viem/account-abstraction";
 
 config();
 
@@ -10,6 +11,8 @@ if (!process.env.PRIVATE_KEY) {
 }
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY as Address;
+
+export const PRIVATE_ACCOUNT = privateKeyToAccount(PRIVATE_KEY);
 
 if (!process.env.PIMLICO_API_KEY) {
   throw new Error("PIMLICO_API_KEY is not defined");
@@ -20,12 +23,9 @@ const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
 export const CREATE2_FACTORY_ADDRESS =
   "0x4e59b44847b379578588920cA78FbF26c0B4956C" as Address;
 
-const selectedChain = celoAlfajores;
+export const selectedChain = celoAlfajores;
 
 export const PIMLICO_URL = `https://api.pimlico.io/v2/${selectedChain.id}/rpc?apikey=${PIMLICO_API_KEY}`;
-
-export const REWARD_TOKEN_ADDRESS =
-  "0x62B8B11039FcfE5aB0C56E502b1C372A3d2a9c7A" as Address;
 
 export const PUBLIC_CLIENT = createPublicClient({
   chain: selectedChain,
@@ -33,7 +33,53 @@ export const PUBLIC_CLIENT = createPublicClient({
 });
 
 export const PRIVATE_CLIENT = createWalletClient({
-  account: privateKeyToAccount(PRIVATE_KEY),
+  account: PRIVATE_ACCOUNT,
   chain: selectedChain,
   transport: http(),
 });
+
+
+export const getSmartAccountAndClient = async () =>{
+  const { createSmartAccountClient } = await import("permissionless");
+  const { toSimpleSmartAccount } = await import("permissionless/accounts");
+  const { createPimlicoClient } = await import(
+    "permissionless/clients/pimlico"
+  );
+
+  const PIMLICO_CLIENT = createPimlicoClient({
+    transport: http(PIMLICO_URL),
+    entryPoint: {
+      address: entryPoint07Address,
+      version: "0.7",
+    },
+  });
+
+  const smartAccount = await toSimpleSmartAccount({
+      client: PUBLIC_CLIENT,
+      owner: PRIVATE_ACCOUNT,
+      entryPoint: {
+        address: entryPoint07Address,
+        version: "0.7",
+      },
+    });
+
+    const smartAccountClient = createSmartAccountClient({
+      account: smartAccount,
+      chain: selectedChain,
+      bundlerTransport: http(PIMLICO_URL),
+      paymaster: PIMLICO_CLIENT,
+      userOperation: {
+        estimateFeesPerGas: async () => {
+          return (await PIMLICO_CLIENT.getUserOperationGasPrice()).fast;
+        },
+      },
+    });
+
+
+    return {
+      smartAccount,
+      smartAccountClient
+    }
+}
+
+
