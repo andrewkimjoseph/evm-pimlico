@@ -1,13 +1,14 @@
-import { Address, http } from "viem";
+import { Abi, Address, http } from "viem";
 import * as simpleCounterContractArtifact from "../../../hardhat/artifacts/contracts/SimpleCounter.sol/SimpleCounter.json";
 import {
   CREATE2_FACTORY_ADDRESS,
   getSmartAccountAndClient,
+  PUBLIC_CLIENT,
 } from "../../../config";
 import { getContractDeploymentData } from "../../../utils/getContractDeploymentData";
 import { getDeployedContractAddress } from "../../../utils/getDeployedContractAddress";
 
-const abi = simpleCounterContractArtifact.abi as [];
+const abi = simpleCounterContractArtifact.abi as Abi;
 const bytecode = simpleCounterContractArtifact.bytecode as Address;
 
 const deploySimpleAccountContract = async () => {
@@ -24,7 +25,9 @@ const deploySimpleAccountContract = async () => {
     ],
   });
 
-  console.info("User operation submitted:", { userOpTxnHash });
+  console.info("[Contract deployment] User operation submitted:", {
+    userOpTxnHash,
+  });
 
   const userOpReceipt = await smartAccountClient.waitForUserOperationReceipt({
     hash: userOpTxnHash,
@@ -32,7 +35,15 @@ const deploySimpleAccountContract = async () => {
 
   const txnHash = userOpReceipt.receipt.transactionHash;
 
-  console.info("Transaction confirmed:", { txnHash });
+  console.info("[Contract deployment] Transaction confirmed:", { txnHash });
+
+  const abstractedTxnReceipt = await PUBLIC_CLIENT.waitForTransactionReceipt({
+    hash: txnHash,
+  });
+
+  if (abstractedTxnReceipt.status === "success") {
+    console.info("[Contract deployment] Transaction success");
+  }
 
   await getDeployedContractAddress(txnHash, "SimpleCounterCreated(address)");
 };
@@ -40,10 +51,12 @@ const deploySimpleAccountContract = async () => {
 const main = async () => {
   try {
     await deploySimpleAccountContract();
-    console.log("Contract deployment completed successfully!");
+    console.info("[Contract deployment] SUCCESS");
   } catch (error) {
-    console.error("Contract deployment failed:", error);
-    throw error;
+    console.error("[Contract deployment] ERROR", error);
+    process.exit(1);
+  } finally {
+    process.exit(0);
   }
 };
 
