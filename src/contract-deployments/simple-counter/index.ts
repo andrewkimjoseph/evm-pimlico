@@ -4,7 +4,7 @@ import {
   CREATE2_FACTORY_ADDRESS,
   getSmartAccountAndClient,
 } from "../../../config";
-import { getDeployDataAndSalt } from "../../../utils/getDeployDataAndSalt";
+import { getContractDeploymentData } from "../../../utils/getContractDeploymentData";
 import { getDeployedContractAddress } from "../../../utils/getDeployedContractAddress";
 
 const abi = simpleCounterContractArtifact.abi as [];
@@ -13,13 +13,13 @@ const bytecode = simpleCounterContractArtifact.bytecode as Address;
 const deploySimpleAccountContract = async () => {
   const { smartAccountClient } = await getSmartAccountAndClient();
 
-  const { deployData, salt } = getDeployDataAndSalt(abi, bytecode);
+  const { contractDeploymentData } = getContractDeploymentData(abi, bytecode);
 
   const userOpTxnHash = await smartAccountClient.sendUserOperation({
     calls: [
       {
         to: CREATE2_FACTORY_ADDRESS,
-        data: deployData,
+        data: contractDeploymentData,
       },
     ],
   });

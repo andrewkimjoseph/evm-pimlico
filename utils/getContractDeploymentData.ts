@@ -1,10 +1,10 @@
 import { randomBytes } from "crypto";
 import { Address, concat, encodeDeployData, encodeFunctionData, Hex, toHex } from "viem";
 
-export function getDeployDataAndSalt(
+export function getContractDeploymentData(
     abi: [],
     bytecode: Address,
-  ): { deployData: Hex; salt: Hex } {
+  ): { contractDeploymentData: Hex } {
     // Generate a random salt for CREATE2
     const salt = toHex(randomBytes(32), { size: 32 });
   
@@ -16,5 +16,5 @@ export function getDeployDataAndSalt(
     // Combine the salt with the deployment data
     const deployData = concat([salt, proxyData]);
   
-    return { deployData, salt };
+    return { contractDeploymentData: deployData };
   }
