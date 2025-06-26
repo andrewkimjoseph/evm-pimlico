@@ -1,8 +1,8 @@
 import { randomBytes } from "crypto";
-import { Address, concat, encodeDeployData, encodeFunctionData, Hex, toHex } from "viem";
+import { Abi, Address, concat, encodeDeployData, encodeFunctionData, Hex, toHex } from "viem";
 
 export function getContractDeploymentData(
-    abi: [],
+    abi: Abi,
     bytecode: Address,
   ): { contractDeploymentData: Hex } {
     // Generate a random salt for CREATE2
