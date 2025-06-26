@@ -27,7 +27,7 @@ export async function getDeployedContractAddress(
         const contractAddress = log.address as Address;
 
         console.info(
-          `Found ${contractCreationEvent} at address: ${contractAddress}`
+          `Found ${contractCreationEvent} at: ${contractAddress}`
         );
 
         // Additional verification: the contract address should also be in the indexed parameter
