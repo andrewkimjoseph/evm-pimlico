@@ -64,17 +64,26 @@ const increment = async (simpleCounterContractAddress: Address) => {
     console.info("[Contract interaction: increment] Transaction success");
   }
 
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const endingCount = Number(
     await PUBLIC_CLIENT.readContract({
       address: simpleCounterContractAddress,
       abi: abi,
       functionName: "getCount",
+      blockNumber: abstractedTxnReceipt.blockNumber,
     })
   );
 
   console.info("[Contract interaction: increment] Ending count:", {
     endingCount,
   });
+
+  if (endingCount === startingCount + 1) {
+    console.info("[Contract interaction: increment] ✅ Counter incremented successfully!");
+  } else {
+    throw new Error("[Contract interaction: increment] ⚠️ Counter did not increment as expected");
+  }
 };
 
 const main = async () => {
