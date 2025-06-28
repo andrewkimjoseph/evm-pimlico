@@ -25,7 +25,7 @@ const deploySimpleAccountContract = async () => {
     ],
   });
 
-  console.info("[Contract deployment] User operation submitted:", {
+  console.info("[SIMPLE COUNTER: Contract deployment] User operation submitted:", {
     userOpTxnHash,
   });
 
@@ -35,14 +35,14 @@ const deploySimpleAccountContract = async () => {
 
   const txnHash = userOpReceipt.receipt.transactionHash;
 
-  console.info("[Contract deployment] Transaction confirmed:", { txnHash });
+  console.info("[SIMPLE COUNTER: Contract deployment] Transaction confirmed:", { txnHash });
 
   const abstractedTxnReceipt = await PUBLIC_CLIENT.waitForTransactionReceipt({
     hash: txnHash,
   });
 
   if (abstractedTxnReceipt.status === "success") {
-    console.info("[Contract deployment] Transaction success");
+    console.info("[SIMPLE COUNTER: Contract deployment] Transaction success");
   }
 
   await getDeployedContractAddress(txnHash, "SimpleCounterCreated(address)");
@@ -51,9 +51,9 @@ const deploySimpleAccountContract = async () => {
 const main = async () => {
   try {
     await deploySimpleAccountContract();
-    console.info("[Contract deployment] SUCCESS");
+    console.info("[SIMPLE COUNTER: Contract deployment] SUCCESS");
   } catch (error) {
-    console.error("[Contract deployment] ERROR", error);
+    console.error("[SIMPLE COUNTER: Contract deployment] ERROR", error);
     process.exit(1);
   } finally {
     process.exit(0);
