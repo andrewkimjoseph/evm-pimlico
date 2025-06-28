@@ -20,12 +20,12 @@ const PRIVATE_ACCOUNT = privateKeyToAccount(PRIVATE_KEY);
 
 const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
 
-export const CREATE2_FACTORY_ADDRESS =
-  "0x4e59b44847b379578588920cA78FbF26c0B4956C" as Address;
-
 const SELECTED_CHAIN = celoAlfajores;
 
 const PIMLICO_URL = `https://api.pimlico.io/v2/${SELECTED_CHAIN.id}/rpc?apikey=${PIMLICO_API_KEY}`;
+
+export const CREATE2_FACTORY_ADDRESS =
+  "0x4e59b44847b379578588920cA78FbF26c0B4956C" as Address;
 
 export const PUBLIC_CLIENT = createPublicClient({
   chain: SELECTED_CHAIN,
