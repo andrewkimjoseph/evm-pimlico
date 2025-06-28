@@ -5,9 +5,9 @@ import { getSmartAccountClient, PUBLIC_CLIENT } from "../../../../../config";
 const abi = simpleCounterContractArtifact.abi as Abi;
 
 const getContractAddress = (): Address => {
-  const contractAddressIndex = process.argv.indexOf("--contractAddress");
+  const contractAddressIndex = process.argv.indexOf("--cntr");
   if (contractAddressIndex === -1 || !process.argv[contractAddressIndex + 1]) {
-    console.error("Error: --contractAddress flag is required");
+    console.error("Error: --cntr flag is required");
     process.exit(1);
   }
   return process.argv[contractAddressIndex + 1] as Address;
