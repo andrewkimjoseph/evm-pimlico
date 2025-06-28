@@ -2,7 +2,7 @@ import { Abi, Address } from "viem";
 import * as simpleAccountContractArtifact from "../../../../hardhat/artifacts/contracts/SimpleAccount.sol/SimpleAccount.json";
 import {
   CREATE2_FACTORY_ADDRESS,
-  getSmartAccountAndClient,
+  getSmartAccountClient,
   PUBLIC_CLIENT,
 } from "../../../../config";
 import { getContractDeploymentData } from "../../../../utils/getContractDeploymentData";
@@ -12,7 +12,7 @@ const abi = simpleAccountContractArtifact.abi as Abi;
 const bytecode = simpleAccountContractArtifact.bytecode as Address;
 
 const deploySimpleAccountImplementationContract = async () => {
-  const { smartAccountClient } = await getSmartAccountAndClient();
+  const { smartAccountClient } = await getSmartAccountClient();
 
   const { contractDeploymentData } = getContractDeploymentData(abi, bytecode);
 

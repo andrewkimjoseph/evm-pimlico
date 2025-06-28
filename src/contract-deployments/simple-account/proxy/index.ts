@@ -2,7 +2,7 @@ import { Abi, Address } from "viem";
 import * as simpleAccountContractArtifact from "../../../../hardhat/artifacts/contracts/SimpleAccount.sol/SimpleAccount.json";
 import {
   CREATE2_FACTORY_ADDRESS,
-  getSmartAccountAndClient,
+  getSmartAccountClient,
   PUBLIC_CLIENT,
 } from "../../../../config";
 import { getDeployedContractAddress } from "../../../../utils/getDeployedContractAddress";
@@ -22,7 +22,7 @@ const getImplementationContractAddress = (): Address => {
 const deploySimpleAccountProxyContract = async (implAddress: Address) => {
   console.info("[SIMPLE ACCOUNT: Proxy contract DEPLOYMENT] Starting deployment with impl:", { implAddress });
   
-  const { smartAccountClient } = await getSmartAccountAndClient();
+  const { smartAccountClient } = await getSmartAccountClient();
 
   const args = {
     _owner: "0x12DC85203e86DD1ea7474b8772AF730484F927a7",

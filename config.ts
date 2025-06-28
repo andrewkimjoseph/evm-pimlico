@@ -23,22 +23,22 @@ const PIMLICO_API_KEY = process.env.PIMLICO_API_KEY;
 export const CREATE2_FACTORY_ADDRESS =
   "0x4e59b44847b379578588920cA78FbF26c0B4956C" as Address;
 
-const selectedChain = celoAlfajores;
+const SELECTED_CHAIN = celoAlfajores;
 
-const PIMLICO_URL = `https://api.pimlico.io/v2/${selectedChain.id}/rpc?apikey=${PIMLICO_API_KEY}`;
+const PIMLICO_URL = `https://api.pimlico.io/v2/${SELECTED_CHAIN.id}/rpc?apikey=${PIMLICO_API_KEY}`;
 
 export const PUBLIC_CLIENT = createPublicClient({
-  chain: selectedChain,
+  chain: SELECTED_CHAIN,
   transport: http(),
 });
 
 export const PRIVATE_CLIENT = createWalletClient({
   account: PRIVATE_ACCOUNT,
-  chain: selectedChain,
+  chain: SELECTED_CHAIN,
   transport: http(),
 });
 
-export const getSmartAccountAndClient = async () =>{
+export const getSmartAccountClient = async () => {
   const { createSmartAccountClient } = await import("permissionless");
   const { toSimpleSmartAccount } = await import("permissionless/accounts");
   const { createPimlicoClient } = await import(
@@ -54,29 +54,27 @@ export const getSmartAccountAndClient = async () =>{
   });
 
   const smartAccount = await toSimpleSmartAccount({
-      client: PUBLIC_CLIENT,
-      owner: PRIVATE_ACCOUNT,
-      entryPoint: {
-        address: entryPoint07Address,
-        version: "0.7",
+    client: PUBLIC_CLIENT,
+    owner: PRIVATE_ACCOUNT,
+    entryPoint: {
+      address: entryPoint07Address,
+      version: "0.7",
+    },
+  });
+
+  const smartAccountClient = createSmartAccountClient({
+    account: smartAccount,
+    chain: SELECTED_CHAIN,
+    bundlerTransport: http(PIMLICO_URL),
+    paymaster: PIMLICO_CLIENT,
+    userOperation: {
+      estimateFeesPerGas: async () => {
+        return (await PIMLICO_CLIENT.getUserOperationGasPrice()).fast;
       },
-    });
+    },
+  });
 
-    const smartAccountClient = createSmartAccountClient({
-      account: smartAccount,
-      chain: selectedChain,
-      bundlerTransport: http(PIMLICO_URL),
-      paymaster: PIMLICO_CLIENT,
-      userOperation: {
-        estimateFeesPerGas: async () => {
-          return (await PIMLICO_CLIENT.getUserOperationGasPrice()).fast;
-        },
-      },
-    });
-
-
-    return {
-      smartAccount,
-      smartAccountClient
-    }
-}
+  return {
+    smartAccountClient
+  };
+};

@@ -1,6 +1,6 @@
 import { Abi, Address, encodeFunctionData, http } from "viem";
 import * as simpleCounterContractArtifact from "../../../../../hardhat/artifacts/contracts/SimpleCounter.sol/SimpleCounter.json";
-import { getSmartAccountAndClient, PUBLIC_CLIENT } from "../../../../../config";
+import { getSmartAccountClient, PUBLIC_CLIENT } from "../../../../../config";
 
 const abi = simpleCounterContractArtifact.abi as Abi;
 
@@ -14,7 +14,7 @@ const getContractAddress = (): Address => {
 };
 
 const increment = async (simpleCounterContractAddress: Address) => {
-  const { smartAccountClient } = await getSmartAccountAndClient();
+  const { smartAccountClient } = await getSmartAccountClient();
 
   const incrementData = encodeFunctionData({
     abi: abi,
