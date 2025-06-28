@@ -23,14 +23,12 @@ export async function getDeployedContractAddress(
         log.topics[0]?.toLowerCase() ===
         contractCreationEventSignature.toLowerCase()
       ) {
-        // The contract address is in log.address
         const contractAddress = log.address as Address;
 
         console.info(
           `Found ${contractCreationEvent} at: ${contractAddress}`
         );
 
-        // Additional verification: the contract address should also be in the indexed parameter
         if (log.topics[1]) {
           const indexedAddress = `0x${log.topics[1].slice(
             -40

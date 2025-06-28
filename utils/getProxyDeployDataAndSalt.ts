@@ -1,32 +1,32 @@
 import { Address, concat, encodeDeployData, encodeFunctionData, Hex, toHex } from "viem";
-import * as ERC1967Artifact from "../hardhat/artifacts/@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol/ERC1967Utils.json";
 import * as simpleAccountArtifact from "../hardhat/artifacts/contracts/SimpleAccount.sol/SimpleAccount.json";
 
 import { randomBytes } from "crypto";
+import { erc1967ABI } from "./erc1967/abi/erc1967ABI";
+import { erc1967ByteCode } from "./erc1967/bytecode/erc1967Bytecode";
 
 
 export function getProxyDeployDataAndSalt(
-    implementationAddress: Address,
-    ownerAddress: Address,
-    primaryPaymentMethod: Address
-  ): { deployData: Hex; salt: Hex } {
+    implAddress: Address,
+    args: any [],
+  ): { proxyDeployData: Hex; salt: Hex } {
     
     const salt = toHex(randomBytes(32), { size: 32 });
   
     const initData = encodeFunctionData({
       abi: simpleAccountArtifact.abi,
       functionName: "initialize",
-      args: [ownerAddress, primaryPaymentMethod],
+      args,
     });
   
     const proxyData = encodeDeployData({
-      abi: ERC1967Artifact.abi,
-      bytecode: ERC1967Artifact.bytecode as Address,
-      args: [implementationAddress, initData],
+      abi: erc1967ABI,
+      bytecode: erc1967ByteCode as Address,
+      args: [implAddress, initData],
     });
   
     // Combine the salt with the deployment data
-    const deployData = concat([salt, proxyData]);
+    const proxyDeployData = concat([salt, proxyData]);
   
-    return { deployData, salt };
+    return { proxyDeployData, salt };
   }
