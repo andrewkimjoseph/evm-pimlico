@@ -1,8 +1,9 @@
-import { Address, createPublicClient, createWalletClient, http } from "viem";
+import { Account, Address, createPublicClient, createWalletClient, custom, http, WalletClient } from "viem";
 import { config } from "dotenv";
 import { celoAlfajores } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 import { entryPoint07Address } from "viem/account-abstraction";
+import { SmartAccountClient } from "permissionless";
 
 config();
 
@@ -37,8 +38,15 @@ export const PRIVATE_CLIENT = createWalletClient({
   chain: SELECTED_CHAIN,
   transport: http(),
 });
+export const getSmartAccountClient = async (): Promise<{
+  smartAccountClient?: SmartAccountClient;
+}> => {
+  if (typeof window === "undefined" || !window.ethereum) {
+    return {
+      smartAccountClient: undefined,
+    };
+  }
 
-export const getSmartAccountClient = async () => {
   const { createSmartAccountClient } = await import("permissionless");
   const { toSimpleSmartAccount } = await import("permissionless/accounts");
   const { createPimlicoClient } = await import(
@@ -53,9 +61,23 @@ export const getSmartAccountClient = async () => {
     },
   });
 
+  const PRIVATE_CLIENT = createWalletClient({
+    chain: SELECTED_CHAIN,
+    transport: custom(window.ethereum),
+  });
+
+  const [address] = await PRIVATE_CLIENT.getAddresses();
+
+
+  const walletClientWithAccount = createWalletClient({
+    account: address,
+    chain: SELECTED_CHAIN,
+    transport: custom(window.ethereum),
+  });
+
   const smartAccount = await toSimpleSmartAccount({
     client: PUBLIC_CLIENT,
-    owner: PRIVATE_ACCOUNT,
+    owner: walletClientWithAccount, // Use the wallet client with guaranteed account
     entryPoint: {
       address: entryPoint07Address,
       version: "0.7",
