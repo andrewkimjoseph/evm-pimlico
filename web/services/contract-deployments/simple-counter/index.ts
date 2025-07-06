@@ -12,9 +12,13 @@ export const deploySimpleCounterContract = async () => {
 
   const { smartAccountClient } = await getSmartAccountClient();
 
+
   if (!smartAccountClient) {
     return;
   }
+
+  console.log("smartAccountClient", smartAccountClient);
+
 
   const { contractDeploymentData } = getContractDeploymentData(abi, bytecode);
 
