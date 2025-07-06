@@ -5,7 +5,7 @@ export default function SimpleAccount() {
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
             Simple Account
           </h1>
-  
+          {/* <button onClick={deploySimpleAccountImplementationContract}>Deploy Simple Account Implementation Contract</button> */}
         </div>
       </div>
     );
